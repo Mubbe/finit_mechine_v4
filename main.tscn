@@ -1,0 +1,118 @@
+[gd_scene load_steps=17 format=3 uid="uid://bt1rhpicu3kmu"]
+
+[ext_resource type="Script" uid="uid://ciryvocf021w1" path="res://Main.cs" id="1_h2yge"]
+[ext_resource type="PackedScene" uid="uid://bdqf2lf6j1kcn" path="res://player.tscn" id="2_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://btja5tw2vaoli" path="res://enemy.tscn" id="3_lquwl"]
+[ext_resource type="AudioStream" uid="uid://dgxvrxknlu38b" path="res://u_ckpn52p1rm-dying-sound-363801.mp3" id="4_lquwl"]
+[ext_resource type="Script" uid="uid://cr0w7hgtk60hr" path="res://AudioStreamPlayer3d.cs" id="5_7mycd"]
+[ext_resource type="Script" uid="uid://bik4awa8rwhn1" path="res://GpuParticles3d.cs" id="6_7mycd"]
+[ext_resource type="Script" uid="uid://bpxf77atsalcc" path="res://PlayerUi.cs" id="6_272bh"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_h2yge"]
+viewport_path = NodePath("Player/SubViewport")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1bvp3"]
+bg_color = Color(0.6, 0.066000015, 0.066000015, 1)
+border_width_bottom = 3
+border_color = Color(0.31, 0.06820001, 0.06820001, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+expand_margin_bottom = 3.0
+shadow_size = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lquwl"]
+bg_color = Color(0.103400014, 0.94, 0.21494678, 1)
+border_width_bottom = 3
+border_color = Color(0.30980393, 0.45882353, 0.06666667, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+expand_margin_bottom = 3.0
+shadow_size = 3
+
+[sub_resource type="Curve" id="Curve_272bh"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.9932432, 0.056179762), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_5vw27"]
+curve = SubResource("Curve_272bh")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_kek77"]
+spread = 180.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.099999994
+scale_max = 0.14999999
+scale_curve = SubResource("CurveTexture_5vw27")
+
+[sub_resource type="PrismMesh" id="PrismMesh_7mycd"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_272bh"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_5vw27"]
+
+[node name="Main" type="Node3D" node_paths=PackedStringArray("player")]
+script = ExtResource("1_h2yge")
+player = NodePath("Player")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.28638518, 0.8590289, -0.42432645, -0.69747454, 0.11672385, 0.7070395, 0.65689635, 0.49844253, 0.5657228, 0, 20.841013, 0)
+
+[node name="Player" parent="." instance=ExtResource("2_1bvp3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22220635, 4.5096393, 0)
+
+[node name="Sprite3D" type="Sprite3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2342429, 0)
+texture = SubResource("ViewportTexture_h2yge")
+
+[node name="SubViewport" type="SubViewport" parent="Player"]
+size = Vector2i(211, 29)
+
+[node name="ProgressBar" type="ProgressBar" parent="Player/SubViewport"]
+offset_right = 211.0
+offset_bottom = 27.0
+theme_override_styles/background = SubResource("StyleBoxFlat_1bvp3")
+theme_override_styles/fill = SubResource("StyleBoxFlat_lquwl")
+value = 100.0
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Player" node_paths=PackedStringArray("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.08472586, 0.3143003, 0)
+stream = ExtResource("4_lquwl")
+autoplay = true
+script = ExtResource("5_7mycd")
+player = NodePath("..")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="Player" node_paths=PackedStringArray("player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.02123344, 0.66728806, 0)
+amount = 50
+lifetime = 0.15000000000000002
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_kek77")
+draw_pass_1 = SubResource("PrismMesh_7mycd")
+script = ExtResource("6_7mycd")
+player = NodePath("..")
+
+[node name="Player_UI" type="Node3D" parent="Player" node_paths=PackedStringArray("player", "healthBar")]
+script = ExtResource("6_272bh")
+player = NodePath("..")
+healthBar = NodePath("../SubViewport/ProgressBar")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.9999575, 0.008141673, -0.004332548, -0.003663685, 0.7817848, 0.6235376, 0.00846376, -0.6234952, 0.7817814, -1.5067806, 11.348621, 17.721203)
+
+[node name="Enemy" parent="." node_paths=PackedStringArray("player") instance=ExtResource("3_lquwl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.861416, 0, 0)
+player = NodePath("../Player")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
+mesh = SubResource("PlaneMesh_272bh")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("WorldBoundaryShape3D_5vw27")
